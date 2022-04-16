@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script defer src="/dist/main.js"></script>
+    <link rel="stylesheet" href="/dist/style.css">
+
+    <title>toDoList</title>
+</head>
+<body> 
+    <div id="content">
+        <header>
+            <div id="div-img-logo">
+                <img src="/src/media/header-logo.png" id="img-logo">
+            </div>
+        </header>
+        <main>
+            <div id="main-menu">
+                <div id="menu-notif">
+                    <div>
+                        <img src="/src/media/Calendar-Icon-removebg-preview.png">
+                        <button id="btn-today" class="btn-basic">Today</button>
+                    </div>
+                    <div>
+                        <img src="/src/media/265-2652422_days-calendar-icon-png-grey.png">
+                        <button id="btn-week" class="btn-basic">This week</button>
+                    </div>
+                </div>
+                <div id="menu-functions">
+                    <h1>Projects</h1>
+                    <div>
+                        <img src="/src/media/plus-icon-black-2.png">
+                        <button id="btn-addproject" class="btn-basic">Add project</button>
+                    </div>
+                    <div id="menu-projects"></div>
+                </div>
+            </div>
+            <div id="main-content">
+                <div id="project-name">Pizza</div>
+                <div id="main-tasks">
+                    <div class="task">
+                        <div class="task-summary">
+                            <input type="checkbox" class="task-checkbox" name="oregano">
+                            <label for="oregano">Oregano</label>
+                            <div class="task-date">17.04.2022</div>
+                        </div>
+                    </div>
+                </div>
+                <button id="btn-addtask" class="btn-basic">+ Add task</button>
+            </div>
+        </main>
+        <footer>
+            Copyright © 2022 Chickenbiscuitoo
+        </footer>
+    </div>
+</body>
+</html>
