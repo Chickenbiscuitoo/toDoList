@@ -40,16 +40,17 @@
             </div>
             <div id="main-content">
                 <div id="project-name">Pizza</div>
-                <div id="main-tasks">
-                    <div class="task">
-                        <div class="task-summary">
-                            <input type="checkbox" class="task-checkbox" name="oregano">
-                            <label for="oregano">Oregano</label>
-                            <div class="task-date">17.04.2022</div>
-                        </div>
+                <div id="task-list"></div>
+                <button id="btn-addtask" class="btn-basic">+ Add task</button>
+                <div id="popup" class="popup-hidden">
+                    <div class="div-inputs"> 
+                        <input type="text" id="input-title" placeholder="Task Name">
+                        <input type="text" id="input-duedate" placeholder="Due Date">
+                    </div>
+                    <div class="div-submit-btn">
+                        <button id="btn-submit-form" class="btn-submit">Submit</button>
                     </div>
                 </div>
-                <button id="btn-addtask" class="btn-basic">+ Add task</button>
             </div>
         </main>
         <footer>
