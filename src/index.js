@@ -1,18 +1,51 @@
 class Task {
-    constructor(title, dueDate) {
+    constructor(title, dueDate, projectName) {
         this.title = title,
-        this.dueDate = dueDate;
-        this.complete = () => {
-            return true
-        }
+        this.dueDate = dueDate,
+        this.projectName = projectName;
     }
 }
 
 class UI {
-    static displayTasks() {
-        tasks = Store.getTasks()
+    static displayProjectPage(project) {
+        const mainContent = document.getElementById('main-content')
 
-        task.forEach((task) => {
+        mainContent.innerHTML = ''
+
+        const projectNameDiv = document.createElement('div')
+        projectNameDiv.id = 'project-name'
+        projectNameDiv.innerText = `${project}`
+
+        const taskListDiv = document.createElement('div')
+        taskListDiv.id = 'task-list'
+
+        const addTaskBtnElement = document.createElement('button')
+        addTaskBtnElement.id = 'btn-addtask'
+        addTaskBtnElement.className = 'btn-basic'
+        addTaskBtnElement.innerText = '+ Add task'
+
+        const popupDiv = document.createElement('div')
+        popupDiv.className = 'popup-hidden'
+        popupDiv.innerHTML = `
+            <div class="div-inputs"> 
+                <input type="text" id="input-title" placeholder="Task Name">
+                <input type="text" id="input-duedate" placeholder="Due Date">
+            </div>
+            <div class="div-submit-btn">
+                <button id="btn-submit-form" class="btn-submit">Submit</button>
+            </div>
+        `;
+
+        mainContent.appendChild(projectNameDiv)
+        mainContent.appendChild(taskListDiv)
+        mainContent.appendChild(addTaskBtnElement)
+        mainContent.appendChild(popupDiv)
+    }
+
+    static displayTasks() {
+        const tasks = Store.getTasks()
+
+        tasks.forEach((task) => {
             UI.addTaskToList(task)
         });
     }
@@ -52,40 +85,60 @@ class UI {
         taskDeleteBtn.innerText = '✖'
     }
 
+    static addProjectToList(title) {
+        const projectsList = document.getElementById('menu-projects')
+        const projectsListDiv = document.createElement('div')
+        projectsListDiv.innerHTML = `<button class="btn-projects btn-basic">${title}</button>`
+        projectsList.appendChild(projectsListDiv)
+    }
+
     static deleteTask(target) {
         if (target.classList.contains('btn-delete-task')) {
             target.parentElement.parentElement.remove();
         }
     }
 
-    static doPopup() {
-        const popup = document.getElementById('popup')
+    static deleteProject(target) {
+        if (target.classList.contains('btn-delete-project')) {
+            target.parentElement.parentElement.remove();
+        }
+    }
 
-        if (popup.className === 'popup-hidden' ) {
-            popup.className = 'popup-visible'
-        } else {
-            popup.className = 'popup-hidden'
+    static doPopup(target) {
+        if (target.classList.contains('popup-hidden') ) {
+            target.classList.replace('popup-hidden', 'popup-visible')
+        } else if (target.classList.contains('popup-visible')) {
+            target.classList.replace('popup-visible', 'popup-hidden')
         }
     }
 
     static doClearForm() {
         document.getElementById('input-title').value = ''
         document.getElementById('input-duedate').value = ''
+        document.getElementById('input-projectname').value = ''
     }
 }
 
 class Store {
+    static projects = new Array()
+    static tasks = new Array()
+
     static getTasks() {
-        let tasks = [
+        return Store.tasks
+    }
 
-        ]
-
-        return tasks
+    static getProjects() {
+        return Store.projects
     }
 
     static addTask(task) {
         const tasks = Store.getTasks()
         tasks.push(task)
+    }
+
+    static addProject(project) {
+        const projects = Store.getProjects()
+        projects.push(project)
     }
 
     static removeTask(title) {
@@ -97,38 +150,71 @@ class Store {
             }
         })
     }
+
+    static removeProject(title) {
+        const projects = Store.getProjects()
+
+        projects.forEach((project, index) => {
+            if (project.title === title) {
+                project.splice(index, 1);
+            }
+        })
+    }
 }
 
-// EVENT: ADD TASK
-const addTaskBtn = document.getElementById('btn-addtask')
+// EVENT: ADD PROJECT
+const addProjectBtn = document.getElementById('btn-addproject')
 
-addTaskBtn.addEventListener('click', () => {
-    UI.doPopup()
+addProjectBtn.addEventListener('click', (e) => {
+    UI.doPopup(e.target.parentElement.nextElementSibling)
 })
 
-const submitFormButton = document.getElementById('btn-submit-form')
+const submitProjectButton = document.getElementById('btn-submit-project')
 
-submitFormButton.addEventListener('click', () => {
-    if (
-        !document.getElementById('input-title').value == '' && 
-        !document.getElementById('input-duedate').value == ''
-    ) {
-        let inputTaskTitle = document.getElementById('input-title').value
-        let inputTaskDuedate = document.getElementById('input-duedate').value
+submitProjectButton.addEventListener('click', (e) => {
+    if (!document.getElementById('input-projectname').value == '') {
+        let inputProjectTitle = document.getElementById('input-projectname').value
 
-        const task = new Task(inputTaskTitle, inputTaskDuedate)
-
-        UI.addTaskToList(task)
-
-        Store.addTask(task)
-
+        UI.addProjectToList(inputProjectTitle)
         UI.doClearForm()
-        UI.doPopup()
+        UI.doPopup(e.target.parentElement.parentElement)
     }
 })
 
-// EVENT: REMOVE TASK
-document.getElementById('task-list').addEventListener('click', (e) => {
-    UI.deleteTask(e.target);
-    Store.removeTask(e.target.previousElementSibling.previousElementSibling.textContent)
+// EVENT: OPEN PROJECT
+const projectMenu = document.getElementById('menu-projects')
+projectMenu.addEventListener('click', (e) => {
+    if (e.target.classList.contains('btn-projects')) {
+        UI.displayProjectPage(e.target.innerText)
+    }
+})
+
+
+// EVENT: ADD TASK
+const mainContent = document.getElementById('main-content')
+
+mainContent.addEventListener('click', (e) => {
+    if (e.target.id === 'btn-addtask') {
+        UI.doPopup(e.target.nextElementSibling)
+    } else if (e.target.id === 'btn-submit-form') {
+        if (
+            !document.getElementById('input-title').value == '' && 
+            !document.getElementById('input-duedate').value == ''
+        ) {
+            let inputTaskTitle = document.getElementById('input-title').value
+            let inputTaskDuedate = document.getElementById('input-duedate').value
+
+            const task = new Task(inputTaskTitle, inputTaskDuedate, mainContent.firstElementChild.textContent)
+    
+            UI.addTaskToList(task)
+    
+            Store.addTask(task)
+    
+            UI.doClearForm()
+            UI.doPopup(e.target)
+        }
+    } else if (e.target.classList.contains('btn-delete-task')) {
+        UI.deleteTask(e.target);
+        Store.removeTask(e.target.previousElementSibling.previousElementSibling.textContent)
+    }
 })

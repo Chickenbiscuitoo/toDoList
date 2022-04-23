@@ -56,9 +56,18 @@ main {
 #menu-functions {
     display: flex;
     flex-direction: column;
+    width: 100%;
 
     margin-left: 80px;
     margin-right: 80px;
+}
+
+#menu-functions .div-inputs {
+    width: 50%;
+}
+
+#menu-functions .div-submit-btn {
+    width: 50%;
 }
 
 #menu-functions h1 {
