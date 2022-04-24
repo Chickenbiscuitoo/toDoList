@@ -42,11 +42,19 @@ class UI {
         mainContent.appendChild(popupDiv)
     }
 
-    static displayTasks() {
-        const tasks = Store.getTasks()
+    static displayProjects() {
+        const projects = Store.getProjects()
+        projects.forEach((project) => {
+            UI.addProjectToList(project)
+        });
+    }
 
+    static displayTasks(project) {
+        const tasks = Store.getTasks()
         tasks.forEach((task) => {
-            UI.addTaskToList(task)
+            if (task.projectName == project) {
+                UI.addTaskToList(task)
+            }
         });
     }
 
@@ -120,25 +128,21 @@ class UI {
 }
 
 class Store {
-    static projects = new Array()
-    static tasks = new Array()
-
     static getTasks() {
-        return Store.tasks
-    }
+        let tasks
+        if (localStorage.getItem('tasks') === null) {
+            tasks = []
+        } else {
+            tasks = JSON.parse(localStorage.getItem('tasks'))
+        }
 
-    static getProjects() {
-        return Store.projects
+        return tasks
     }
 
     static addTask(task) {
         const tasks = Store.getTasks()
         tasks.push(task)
-    }
-
-    static addProject(project) {
-        const projects = Store.getProjects()
-        projects.push(project)
+        localStorage.setItem('tasks', JSON.stringify(tasks))
     }
 
     static removeTask(title) {
@@ -149,6 +153,25 @@ class Store {
                 tasks.splice(index, 1);
             }
         })
+
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+    }
+
+    static getProjects() {
+        let projects
+        if (localStorage.getItem('projects') === null) {
+            projects = []
+        } else {
+            projects = JSON.parse(localStorage.getItem('projects'))
+        }
+
+        return projects
+    }
+
+    static addProject(project) {
+        const projects = Store.getProjects()
+        projects.push(project)
+        localStorage.setItem('projects', JSON.stringify(projects))
     }
 
     static removeProject(title) {
@@ -156,11 +179,15 @@ class Store {
 
         projects.forEach((project, index) => {
             if (project.title === title) {
-                project.splice(index, 1);
+                projects.splice(index, 1);
             }
         })
+
+        localStorage.setItem('projects', JSON.stringify(projects))
     }
 }
+
+UI.displayProjects()
 
 // EVENT: ADD PROJECT
 const addProjectBtn = document.getElementById('btn-addproject')
@@ -176,6 +203,8 @@ submitProjectButton.addEventListener('click', (e) => {
         let inputProjectTitle = document.getElementById('input-projectname').value
 
         UI.addProjectToList(inputProjectTitle)
+        Store.addProject(inputProjectTitle)
+
         UI.doClearForm()
         UI.doPopup(e.target.parentElement.parentElement)
     }
@@ -186,6 +215,7 @@ const projectMenu = document.getElementById('menu-projects')
 projectMenu.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-projects')) {
         UI.displayProjectPage(e.target.innerText)
+        UI.displayTasks(e.target.innerText)
     }
 })
 
