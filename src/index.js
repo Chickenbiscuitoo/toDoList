@@ -96,8 +96,15 @@ class UI {
     static addProjectToList(title) {
         const projectsList = document.getElementById('menu-projects')
         const projectsListDiv = document.createElement('div')
+        const projectDeleteBtn = document.createElement('button')
+
         projectsListDiv.innerHTML = `<button class="btn-projects btn-basic">${title}</button>`
+        projectsListDiv.classList = 'div-project'
+        projectDeleteBtn.classList = 'btn-del-project'
+        projectDeleteBtn.innerText = '✖'
+
         projectsList.appendChild(projectsListDiv)
+        projectsListDiv.appendChild(projectDeleteBtn)
     }
 
     static deleteTask(target) {
@@ -107,8 +114,8 @@ class UI {
     }
 
     static deleteProject(target) {
-        if (target.classList.contains('btn-delete-project')) {
-            target.parentElement.parentElement.remove();
+        if (target.classList.contains('btn-del-project')) {
+            target.parentElement.remove();
         }
     }
 
@@ -121,9 +128,13 @@ class UI {
     }
 
     static doClearForm() {
-        document.getElementById('input-title').value = ''
-        document.getElementById('input-duedate').value = ''
         document.getElementById('input-projectname').value = ''
+
+        if (!document.getElementById('input-title').value === null && 
+            !document.getElementById('input-duedate').value === null) {
+                document.getElementById('input-title').value = ''
+                document.getElementById('input-duedate').value = ''
+            }
     }
 }
 
@@ -176,12 +187,19 @@ class Store {
 
     static removeProject(title) {
         const projects = Store.getProjects()
+        const tasks = Store.getTasks()
 
         projects.forEach((project, index) => {
-            if (project.title === title) {
+            if (project === title) {
                 projects.splice(index, 1);
             }
         })
+
+        tasks.forEach((task) => {
+            if (task.projectName === title) {
+                Store.removeTask(task.title)
+            }
+        });
 
         localStorage.setItem('projects', JSON.stringify(projects))
     }
@@ -205,8 +223,8 @@ submitProjectButton.addEventListener('click', (e) => {
         UI.addProjectToList(inputProjectTitle)
         Store.addProject(inputProjectTitle)
 
-        UI.doClearForm()
         UI.doPopup(e.target.parentElement.parentElement)
+        UI.doClearForm()
     }
 })
 
@@ -216,11 +234,13 @@ projectMenu.addEventListener('click', (e) => {
     if (e.target.classList.contains('btn-projects')) {
         UI.displayProjectPage(e.target.innerText)
         UI.displayTasks(e.target.innerText)
+    } else if (e.target.classList.contains('btn-del-project')){
+        Store.removeProject(e.target.previousElementSibling.innerText)
+        UI.deleteProject(e.target)
     }
 })
 
-
-// EVENT: ADD TASK
+// EVENT: ADD TASK AND REMOVE TASK
 const mainContent = document.getElementById('main-content')
 
 mainContent.addEventListener('click', (e) => {

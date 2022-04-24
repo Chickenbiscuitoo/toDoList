@@ -74,6 +74,10 @@ main {
     font-size: 35px;
 }
 
+.div-project {
+    width: 70%;
+}
+
 #main-content {
     flex: 5;
     display: flex;
