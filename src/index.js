@@ -1,3 +1,5 @@
+import { format, formatDistance, differenceInCalendarDays } from 'date-fns'
+
 class Task {
     constructor(title, dueDate, projectName) {
         this.title = title,
@@ -7,6 +9,54 @@ class Task {
 }
 
 class UI {
+    static displayTodayPage() {
+        const mainContent = document.getElementById('main-content')
+
+        mainContent.innerHTML = ''
+
+        const divTitleMain = document.createElement('div')
+        divTitleMain.id = 'project-name'
+        divTitleMain.innerText = 'Today'
+
+        const taskListDiv = document.createElement('div')
+        taskListDiv.id = 'task-list'
+
+        mainContent.appendChild(divTitleMain)
+        mainContent.appendChild(taskListDiv)
+    }
+
+    static displayTodayTasks() {
+        const todayTasks = Store.getTodayTasks()
+
+        todayTasks.forEach((task) => {
+            UI.addTaskToList(task)
+        });
+    }
+
+    static displayWeekPage() {
+        const mainContent = document.getElementById('main-content')
+
+        mainContent.innerHTML = ''
+
+        const divTitleMain = document.createElement('div')
+        divTitleMain.id = 'project-name'
+        divTitleMain.innerText = 'This Week'
+
+        const taskListDiv = document.createElement('div')
+        taskListDiv.id = 'task-list'
+
+        mainContent.appendChild(divTitleMain)
+        mainContent.appendChild(taskListDiv)
+    }
+
+    static displayWeekTasks() {
+        const weekTasks = Store.getTodayTasks()
+
+        weekTasks.forEach((task) => {
+            UI.addTaskToList(task)
+        });
+    }
+
     static displayProjectPage(project) {
         const mainContent = document.getElementById('main-content')
 
@@ -29,7 +79,7 @@ class UI {
         popupDiv.innerHTML = `
             <div class="div-inputs"> 
                 <input type="text" id="input-title" placeholder="Task Name">
-                <input type="text" id="input-duedate" placeholder="Due Date">
+                <input type="date" id="input-duedate">
             </div>
             <div class="div-submit-btn">
                 <button id="btn-submit-form" class="btn-submit">Submit</button>
@@ -203,6 +253,40 @@ class Store {
 
         localStorage.setItem('projects', JSON.stringify(projects))
     }
+
+    static getTodayTasks() {
+        const tasks = Store.getTasks()
+
+        let todayTasks = []
+        let today = new Date()
+
+        tasks.forEach((task) => {
+            let dueDate = new Date(task.dueDate)
+
+            if (differenceInCalendarDays(dueDate, today) < 2) {
+                todayTasks.push(task)
+            }
+        });
+
+        return todayTasks
+    }
+
+    static getWeekTasks() {
+        const tasks = Store.getTasks()
+
+        let weekTasks = []
+        let today = new Date()
+
+        tasks.forEach((task) => {
+            let dueDate = new Date(task.dueDate)
+
+            if (differenceInCalendarDays(dueDate, today) < 8) {
+                weekTasks.push(task)
+            }
+        });
+
+        return weekTasks
+    }
 }
 
 UI.displayProjects()
@@ -267,4 +351,18 @@ mainContent.addEventListener('click', (e) => {
         UI.deleteTask(e.target);
         Store.removeTask(e.target.previousElementSibling.previousElementSibling.textContent)
     }
+})
+
+// EVENT: DISPLAY TODAY PAGE
+const btnToday = document.getElementById('btn-today')
+btnToday.addEventListener('click', () => {
+    UI.displayTodayPage()
+    UI.displayTodayTasks()
+})
+
+// EVENT: DISPLAY WEEK PAGE
+const btnWeek = document.getElementById('btn-week')
+btnWeek.addEventListener('click', () => {
+    UI.displayWeekPage()
+    UI.displayWeekTasks()
 })
